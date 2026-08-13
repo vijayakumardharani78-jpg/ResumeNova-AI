@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register | ResumeNova AI</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="register.css">
+
+</head>
+
+<body>
+
+<div class="register-container">
+
+    <div class="left-panel">
+
+        <h1>Create Account 🚀</h1>
+
+        <p>
+            Join ResumeNova AI and create professional ATS-friendly resumes
+            to achieve your dream career.
+        </p>
+
+        <div class="circle"></div>
+
+    </div>
+
+
+    <div class="right-panel">
+
+        <form class="register-form" action="/register" method="POST">
+
+            <h2>Register</h2>
+
+
+            <div class="input-box">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" 
+                       name="fullname"
+                       placeholder="Full Name"
+                       required>
+            </div>
+
+
+            <div class="input-box">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email"
+                       name="email"
+                       placeholder="Email Address"
+                       required>
+            </div>
+
+
+            <div class="input-box">
+                <i class="fa-solid fa-phone"></i>
+                <input type="tel"
+                       name="phone"
+                       placeholder="Mobile Number"
+                       required>
+            </div>
+
+
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password"
+                       name="password"
+                       placeholder="Create Password"
+                       required>
+            </div>
+
+
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password"
+                       placeholder="Confirm Password"
+                       required>
+            </div>
+
+
+            <button type="submit">
+                Create Account
+            </button>
+
+
+            <p class="login-link">
+                Already have an account?
+                <a href="/login">Login</a>
+            </p>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

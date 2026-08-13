@@ -1,0 +1,143 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#EEF5FF;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+}
+
+.register-container{
+    width:1000px;
+    max-width:95%;
+    background:#fff;
+    border-radius:20px;
+    overflow:hidden;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    box-shadow:0 20px 50px rgba(0,0,0,.12);
+}
+
+/* Left Panel */
+
+.left-panel{
+    background:linear-gradient(135deg,#2563EB,#1D4ED8);
+    color:#fff;
+    padding:70px 50px;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+.left-panel h1{
+    font-size:40px;
+    margin-bottom:20px;
+}
+
+.left-panel p{
+    line-height:1.8;
+    font-size:17px;
+}
+
+.circle{
+    position:absolute;
+    width:280px;
+    height:280px;
+    background:rgba(255,255,255,.15);
+    border-radius:50%;
+    bottom:-90px;
+    right:-70px;
+}
+
+/* Right Panel */
+
+.right-panel{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+}
+
+.register-form{
+    width:100%;
+}
+
+.register-form h2{
+    text-align:center;
+    margin-bottom:30px;
+    color:#111827;
+}
+
+.input-box{
+    display:flex;
+    align-items:center;
+    border:1px solid #D1D5DB;
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:18px;
+}
+
+.input-box i{
+    color:#2563EB;
+    margin-right:12px;
+}
+
+.input-box input{
+    width:100%;
+    border:none;
+    outline:none;
+    font-size:16px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:#2563EB;
+    color:#fff;
+    font-size:17px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    background:#1D4ED8;
+    transform:translateY(-3px);
+}
+
+.login-link{
+    text-align:center;
+    margin-top:20px;
+}
+
+.login-link a{
+    color:#2563EB;
+    text-decoration:none;
+    font-weight:600;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+.register-container{
+    grid-template-columns:1fr;
+}
+
+.left-panel{
+    display:none;
+}
+
+.right-panel{
+    padding:25px;
+}
+
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Resume</title>
+    <link rel="stylesheet" href="edit-resume.css">
+</head>
+<body>
+
+<div class="container">
+
+<h1>Edit Resume</h1>
+
+<form action="/update-resume" method="POST">
+
+<label>Full Name</label>
+<input type="text" name="fullname" id="fullname">
+
+<label>Email</label>
+<input type="email" name="email" id="email">
+
+<label>Phone</label>
+<input type="text" name="phone" id="phone">
+
+<label>Address</label>
+<textarea name="address" id="address"></textarea>
+
+<label>Career Objective</label>
+<textarea name="objective" id="objective"></textarea>
+
+<label>Skills</label>
+<textarea name="skills" id="skills"></textarea>
+
+<label>Education</label>
+<textarea name="education" id="education"></textarea>
+
+<label>Experience</label>
+<textarea name="experience" id="experience"></textarea>
+
+<label>Projects</label>
+<textarea name="projects" id="projects"></textarea>
+
+<button type="submit">Update Resume</button>
+<form action="/update-resume" method="POST"></form>
+
+</form>
+
+</div>
+
+<script>
+fetch("/resume-data")
+.then(res => res.json())
+.then(data => {
+
+    document.getElementById("fullname").value = data.fullname || "";
+    document.getElementById("email").value = data.email || "";
+    document.getElementById("phone").value = data.phone || "";
+    document.getElementById("address").value = data.address || "";
+    document.getElementById("objective").value = data.objective || "";
+    document.getElementById("skills").value = data.skills || "";
+    document.getElementById("education").value = data.education || "";
+    document.getElementById("experience").value = data.experience || "";
+    document.getElementById("projects").value = data.projects || "";
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ResumeNova AI</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Poppins,sans-serif;
+        }
+
+        body{
+            background:#f5f7fb;
+        }
+
+        .navbar{
+            background:#2563eb;
+            color:white;
+            padding:20px 40px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .container{
+            padding:40px;
+        }
+
+        .card{
+            background:white;
+            padding:30px;
+            border-radius:15px;
+            box-shadow:0 0 15px rgba(0,0,0,.1);
+        }
+
+        h1{
+            color:#2563eb;
+            margin-bottom:15px;
+        }
+
+        button{
+            margin-top:20px;
+            padding:12px 25px;
+            border:none;
+            border-radius:8px;
+            background:#2563eb;
+            color:white;
+            cursor:pointer;
+        }
+        .btn{
+    display:inline-block;
+    margin-top:20px;
+    padding:12px 25px;
+    background:#2563eb;
+    color:#fff;
+    text-decoration:none;
+    border-radius:8px;
+}
+    </style>
+
+</head>
+<body>
+
+<div class="navbar">
+    <h2>ResumeNova AI</h2>
+
+    <a href="/" style="color:white;text-decoration:none;">
+        Logout
+    </a>
+</div>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>Welcome 🎉</h1>
+
+        <p>Login Successful.</p>
+
+        <a href="/resume">
+    <button>Create Resume</button>
+</a>
+<a href="/templates">
+    <button>Select Resume Template</button>
+</a>
+<a href="/edit-resume">
+    <button>Edit Resume</button>
+</a>
+<a href="/delete-resume"
+   onclick="return confirm('Are you sure you want to delete your resume?');">
+    <button>Delete Resume</button>
+</a>
+
+<a href="/ats-score">
+    <button>📊 ATS Score</button>
+</a>
+    </div>
+
+
+</div>
+
+</body>
+</html>

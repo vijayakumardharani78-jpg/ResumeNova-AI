@@ -1,0 +1,22 @@
+{
+  "name": "resumenova-ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "groq-sdk": "^1.5.0",
+    "html-pdf": "^3.0.1",
+    "multer": "^2.2.0",
+    "mysql2": "^3.23.2",
+    "openai": "^7.4.0"
+  }
+}
