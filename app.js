@@ -108,11 +108,15 @@ app.post("/register", (req, res) => {
         if (err) {
             console.log("REGISTER ERROR:", err);
 
-            return res.status(500).send(`
-                <h2>Registration Database Error ❌</h2>
-                <pre>${err.message}</pre>
-            `);
-        }
+           return res.status(500).send(`
+    <h2>Registration Database Error ❌</h2>
+    <pre>
+CODE: ${err.code}
+MESSAGE: ${err.message}
+SQL STATE: ${err.sqlState}
+    </pre>
+`);
+        } 
 
         console.log("Registration successful ✅");
         console.log("Inserted ID:", result.insertId);
