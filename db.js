@@ -13,17 +13,16 @@ const connection = mysql.createPool({
 
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
 });
 
 connection.getConnection((err, conn) => {
     if (err) {
         console.log("❌ Database connection failed");
-        console.log("HOST:", process.env.DB_HOST);
-        console.log("PORT:", process.env.DB_PORT);
-        console.log("USER:", process.env.DB_USER);
-        console.log("DATABASE:", process.env.DB_NAME);
-        console.log("ERROR:", err);
+        console.log(err);
         return;
     }
 
