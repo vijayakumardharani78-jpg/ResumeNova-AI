@@ -94,25 +94,37 @@ app.post("/register", (req, res) => {
     const { fullname, email, phone, password } = req.body;
 
     const sql = `
-        INSERT INTO users(fullname,email,phone,password)
-        VALUES(?,?,?,?)
+        INSERT INTO users(fullname, email, phone, password)
+        VALUES (?, ?, ?, ?)
     `;
 
     db.query(sql, [fullname, email, phone, password], (err, result) => {
 
         if (err) {
-            console.log("REGISTER DB ERROR:", err);
-            return res.status(500).send(
-                "Registration Failed ❌<br>" +
-                "Error Code: " + err.code + "<br>" +
-                "Error: " + err.message
-            );
+
+            console.log("========== REGISTER ERROR ==========");
+            console.log("Code:", err.code);
+            console.log("Errno:", err.errno);
+            console.log("Message:", err.message);
+            console.log("Address:", err.address);
+            console.log("Port:", err.port);
+            console.log("Full Error:", err);
+            console.log("====================================");
+
+            return res.status(500).send(`
+                Registration Failed ❌<br><br>
+                Error Code: ${err.code || "N/A"}<br>
+                Error: ${err.message || "No message"}<br>
+                Address: ${err.address || "N/A"}<br>
+                Port: ${err.port || "N/A"}
+            `);
         }
 
-        console.log("Registration successful:", result);
+        console.log("Registration successful ✅");
+        console.log("Inserted ID:", result.insertId);
+
         res.redirect("/login");
     });
-
 });
 /* ===========================
    LOGIN
