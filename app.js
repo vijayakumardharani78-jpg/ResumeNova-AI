@@ -90,28 +90,48 @@ app.get("/template3", (req, res) => {
    REGISTER
 =========================== */
 
-db.query(sql, [fullname, email, phone, password], (err, result) => {
+/* ===========================
+   REGISTER
+=========================== */
 
-    if (err) {
-        console.log("========== REGISTER ERROR ==========");
-        console.log("Code:", err.code);
-        console.log("Message:", err.message);
-        console.log("SQL State:", err.sqlState);
-        console.log("Full Error:", err);
-        console.log("====================================");
+app.post("/register", (req, res) => {
 
-        if (err.code === "ER_DUP_ENTRY") {
-            return res.send("❌ Email already registered.");
+    const { fullname, email, phone, password } = req.body;
+
+    const sql = `
+        INSERT INTO users(fullname, email, phone, password)
+        VALUES (?, ?, ?, ?)
+    `;
+
+    db.query(
+        sql,
+        [fullname, email, phone, password],
+        (err, result) => {
+
+            if (err) {
+
+                console.log("========== REGISTER ERROR ==========");
+                console.log("Code:", err.code);
+                console.log("Message:", err.message);
+                console.log("SQL State:", err.sqlState);
+                console.log("====================================");
+
+                if (err.code === "ER_DUP_ENTRY") {
+                    return res.send("❌ Email already registered.");
+                }
+
+                return res.status(500).send("Registration Failed ❌");
+            }
+
+            console.log("Registration successful ✅");
+            console.log("Inserted ID:", result.insertId);
+
+            res.redirect("/login");
         }
+    );
 
-        return res.status(500).send("Registration Failed ❌");
-    }
-
-    console.log("Registration successful ✅");
-    console.log("Inserted ID:", result.insertId);
-
-    res.redirect("/login");
 });
+    
 /* ===========================
    LOGIN
 =========================== */
