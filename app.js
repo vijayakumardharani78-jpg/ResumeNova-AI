@@ -93,49 +93,27 @@ app.post("/register", (req, res) => {
 
     const { fullname, email, phone, password } = req.body;
 
-    console.log("REGISTER DATA:", {
-        fullname,
-        email,
-        phone,
-        password: "***"
-    });
-
     const sql = `
-        INSERT INTO users (fullname, email, phone, password)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO users(fullname,email,phone,password)
+        VALUES(?,?,?,?)
     `;
 
-    db.query(
-        sql,
-        [fullname, email, phone, password],
-        (err, result) => {
+    db.query(sql, [fullname, email, phone, password], (err, result) => {
 
-            if (err) {
-
-                console.log("REGISTER DB ERROR:", err);
-
-                if (err.code === "ER_DUP_ENTRY") {
-                    return res.status(400).send(
-                        "❌ Email already registered."
-                    );
-                }
-
-                return res.status(500).send(
-                    `Registration Failed ❌<br><br>
-                     Error Code: ${err.code}<br>
-                     Error: ${err.message}`
-                );
-            }
-
-            console.log("REGISTER SUCCESS ✅");
-            console.log("Inserted ID:", result.insertId);
-
-            res.redirect("/login");
+        if (err) {
+            console.log("REGISTER DB ERROR:", err);
+            return res.status(500).send(
+                "Registration Failed ❌<br>" +
+                "Error Code: " + err.code + "<br>" +
+                "Error: " + err.message
+            );
         }
-    );
+
+        console.log("Registration successful:", result);
+        res.redirect("/login");
+    });
 
 });
-
 /* ===========================
    LOGIN
 =========================== */
