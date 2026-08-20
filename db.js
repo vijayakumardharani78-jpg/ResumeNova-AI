@@ -1,6 +1,6 @@
 const mysql = require("mysql2");
 
-const connection = mysql.createPool({
+const db = mysql.createPool({
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
     user: process.env.DB_USER,
@@ -19,15 +19,17 @@ const connection = mysql.createPool({
     keepAliveInitialDelay: 0
 });
 
-connection.getConnection((err, conn) => {
+db.getConnection((err, connection) => {
     if (err) {
         console.log("❌ Database connection failed");
-        console.log(err);
+        console.log("HOST:", process.env.DB_HOST);
+        console.log("PORT:", process.env.DB_PORT);
+        console.log("ERROR:", err);
         return;
     }
 
     console.log("✅ MariaDB Database Connected Successfully");
-    conn.release();
+    connection.release();
 });
 
-module.exports = connection;
+module.exports = db;

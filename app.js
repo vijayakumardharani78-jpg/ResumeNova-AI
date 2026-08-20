@@ -3,6 +3,7 @@ const db = require("./db");
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
+const puppeteer = require("puppeteer");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -299,24 +300,141 @@ app.get("/download-pdf", (req, res) => {
         </body>
         </html>
         `;
+const puppeteer = require("puppeteer");
 
-       pdf.create(html, {
-    base: "file:///" + __dirname.replace(/\\/g, "/") + "/"
-}).toFile("./resume.pdf", (err) =>  {
+app.get("/download-pdf", async (req, res) => {
 
-            if (err) {
-                console.log(err);
-                return res.send("PDF Failed");
+    const sql = "SELECT * FROM resumes ORDER BY id DESC LIMIT 1";
+
+    db.query(sql, async (err, result) => {
+
+        if (err) {
+            console.log("PDF DATABASE ERROR:", err);
+            return res.status(500).send("Database Error");
+        }
+
+        if (!result || result.length === 0) {
+            return res.status(404).send("No Resume Found");
+        }
+
+        const data = result[0];
+
+        const html = `
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    padding: 40px;
+                    color: #222;
+                }
+
+                h1 {
+                    color: #1e3a8a;
+                }
+
+                h2 {
+                    border-bottom: 1px solid #ccc;
+                    padding-bottom: 5px;
+                    margin-top: 25px;
+                }
+
+                img {
+                    width: 120px;
+                    height: 120px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    float: right;
+                }
+            </style>
+        </head>
+
+        <body>
+
+            <h1>${data.fullname || ""}</h1>
+
+            <p><b>Email:</b> ${data.email || ""}</p>
+            <p><b>Phone:</b> ${data.phone || ""}</p>
+            <p><b>Address:</b> ${data.address || ""}</p>
+
+            <h2>Career Objective</h2>
+            <p>${data.objective || ""}</p>
+
+            <h2>Skills</h2>
+            <p>${data.skills || ""}</p>
+
+            <h2>Education</h2>
+            <p>${data.education || ""}</p>
+
+            <h2>Experience</h2>
+            <p>${data.experience || ""}</p>
+
+            <h2>Projects</h2>
+            <p>${data.projects || ""}</p>
+
+        </body>
+        </html>
+        `;
+
+        let browser;
+
+        try {
+
+            browser = await puppeteer.launch({
+                headless: true,
+                args: [
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage"
+                ]
+            });
+
+            const page = await browser.newPage();
+
+            await page.setContent(html, {
+                waitUntil: "networkidle0"
+            });
+
+            await page.pdf({
+                path: "./resume.pdf",
+                format: "A4",
+                printBackground: true,
+                margin: {
+                    top: "20px",
+                    right: "20px",
+                    bottom: "20px",
+                    left: "20px"
+                }
+            });
+
+            await browser.close();
+
+            res.download("./resume.pdf", "ResumeNova-Resume.pdf", (downloadErr) => {
+
+                if (downloadErr) {
+                    console.log("PDF DOWNLOAD ERROR:", downloadErr);
+                }
+
+            });
+
+        } catch (pdfError) {
+
+            console.log("PDF GENERATION ERROR:", pdfError);
+
+            if (browser) {
+                try {
+                    await browser.close();
+                } catch (e) {
+                    console.log("Browser close error:", e);
+                }
             }
 
-            res.download("./resume.pdf");
-
-        });
+            return res.status(500).send("PDF Generation Failed");
+        }
 
     });
 
 });
-
 /* ===========================
    SERVER
 =========================== */
