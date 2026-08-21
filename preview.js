@@ -1,32 +1,49 @@
 fetch("/resume-data")
-.then(response => response.json())
-.then(data => {
+    .then(response => {
 
-    console.log(data);
+        if (!response.ok) {
+            throw new Error("Resume data not found");
+        }
 
-    document.getElementById("fullname").innerText = data.fullname || "";
-    document.getElementById("email").innerText = data.email || "";
-    document.getElementById("phone").innerText = data.phone || "";
-    document.getElementById("objective").innerText = data.objective || "";
-    document.getElementById("skills").innerText = data.skills || "";
-    document.getElementById("education").innerText = data.education || "";
-    document.getElementById("experience").innerText = data.experience || "";
-    document.getElementById("projects").innerText = data.projects || "";
+        return response.json();
+    })
+    .then(data => {
 
-    if (data.photo) {
+        document.getElementById("fullname").textContent =
+            data.fullname || "";
 
-        const photo = document.getElementById("photo");
-        console.log("/uploads/" + data.photo);
+        document.getElementById("email").textContent =
+            data.email || "";
 
-        photo.src = "/uploads/" + data.photo;
+        document.getElementById("phone").textContent =
+            data.phone || "";
 
-        photo.style.display = "block";
+        document.getElementById("objective").textContent =
+            data.objective || "";
 
-    }
+        document.getElementById("skills").textContent =
+            data.skills || "";
 
-})
-.catch(err => {
+        document.getElementById("education").textContent =
+            data.education || "";
 
-    console.log(err);
+        document.getElementById("experience").textContent =
+            data.experience || "";
 
-});
+        document.getElementById("projects").textContent =
+            data.projects || "";
+
+        if (data.photo) {
+
+            const photo = document.getElementById("photo");
+
+            photo.src = "/uploads/" + data.photo;
+            photo.style.display = "block";
+        }
+
+    })
+    .catch(error => {
+
+        console.error("PREVIEW ERROR:", error);
+
+    });

@@ -8,7 +8,6 @@ const puppeteer = require("puppeteer");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const fs = require("fs");
-const pdf = require("html-pdf");
 const { GoogleGenAI } = require("@google/genai");
 
 const ai = new GoogleGenAI({
@@ -157,7 +156,32 @@ app.post("/login", (req, res) => {
 /* ===========================
    SAVE RESUME
 =========================== */
+app.get("/preview", (req, res) => {
+    res.sendFile(path.join(__dirname, "preview.html"));
+});
+app.get("/resume-data", (req, res) => {
 
+    const sql = "SELECT * FROM resumes ORDER BY id DESC LIMIT 1";
+
+    db.query(sql, (err, result) => {
+
+        if (err) {
+            console.log("RESUME DATA ERROR:", err);
+            return res.status(500).json({
+                error: "Database Error"
+            });
+        }
+
+        if (!result || result.length === 0) {
+            return res.status(404).json({
+                error: "No Resume Found"
+            });
+        }
+
+        res.json(result[0]);
+    });
+
+});
 app.post("/resume", upload.single("photo"), (req, res) => {
 
     const photo = req.file ? req.file.filename : null;
@@ -214,94 +238,6 @@ app.post("/resume", upload.single("photo"), (req, res) => {
 /* ===========================
    RESUME DATA
 =========================== */
-
-app.get("/resume-data", (req, res) => {
-
-    const sql = "SELECT * FROM resumes ORDER BY id DESC LIMIT 1";
-
-    db.query(sql, (err, result) => {
-
-        if (err) {
-            console.log(err);
-            return res.json({ error: "Database Error" });
-        }
-
-        res.json(result[0]);
-
-    });
-
-});
-app.get("/download-pdf", (req, res) => {
-
-    const sql = "SELECT * FROM resumes ORDER BY id DESC LIMIT 1";
-
-    db.query(sql, (err, result) => {
-
-        if (err) {
-            console.log(err);
-            return res.send("Database Error");
-        }
-
-        const data = result[0];
-
-        const html = `
-        <html>
-        <head>
-            <style>
-                body{
-                    font-family: Arial;
-                    padding:40px;
-                }
-                h1{
-                    color:#1e3a8a;
-                }
-                h2{
-                    border-bottom:1px solid #ccc;
-                    padding-bottom:5px;
-                }
-                img{
-                    width:120px;
-                    height:120px;
-                    border-radius:50%;
-                    object-fit:cover;
-                    float:right;
-                }
-            </style>
-        </head>
-
-        <body>
-
-           ${
-    data.photo
-    ? `<img src="http://localhost:${PORT}/uploads/${data.photo}">`
-    : ""
-}
-            <h1>${data.fullname}</h1>
-
-            <p><b>Email:</b> ${data.email}</p>
-            <p><b>Phone:</b> ${data.phone}</p>
-            <p><b>Address:</b> ${data.address}</p>
-
-            <h2>Career Objective</h2>
-            <p>${data.objective}</p>
-
-            <h2>Skills</h2>
-            <p>${data.skills}</p>
-
-            <h2>Education</h2>
-            <p>${data.education}</p>
-
-            <h2>Experience</h2>
-            <p>${data.experience}</p>
-
-            <h2>Projects</h2>
-            <p>${data.projects}</p>
-
-        </body>
-        </html>
-        `;
-const puppeteer = require("puppeteer");
-
 app.get("/download-pdf", async (req, res) => {
 
     const sql = "SELECT * FROM resumes ORDER BY id DESC LIMIT 1";
@@ -318,6 +254,25 @@ app.get("/download-pdf", async (req, res) => {
         }
 
         const data = result[0];
+
+        let imageSrc = "";
+
+if (data.photo) {
+    const imagePath = path.join(__dirname, "uploads", data.photo);
+
+    if (fs.existsSync(imagePath)) {
+        const ext = path.extname(data.photo).toLowerCase();
+
+        let mime = "image/jpeg";
+
+        if (ext === ".png") mime = "image/png";
+        if (ext === ".webp") mime = "image/webp";
+
+        const base64 = fs.readFileSync(imagePath).toString("base64");
+
+        imageSrc = `data:${mime};base64,${base64}`;
+    }
+}
 
         const html = `
         <html>
@@ -346,10 +301,17 @@ app.get("/download-pdf", async (req, res) => {
                     object-fit: cover;
                     float: right;
                 }
+                    
             </style>
         </head>
 
         <body>
+
+        <body>
+
+    ${imageSrc ? `<img src="${imageSrc}" class="profile-photo">` : ""}
+
+    <h1>${data.fullname || ""}</h1>
 
             <h1>${data.fullname || ""}</h1>
 
@@ -375,7 +337,7 @@ app.get("/download-pdf", async (req, res) => {
         </body>
         </html>
         `;
-
+       
         let browser;
 
         try {
@@ -474,7 +436,7 @@ Return ONLY valid JSON like this:
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
-app.post("/update-resume", (req, res) => {
+app.post("/update-resume", (req, res) => {   
 
     const {
         fullname,
