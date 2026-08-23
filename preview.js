@@ -1,3 +1,5 @@
+
+console.log("PREVIEW JS LOADED");
 fetch("/resume-data")
     .then(response => {
 

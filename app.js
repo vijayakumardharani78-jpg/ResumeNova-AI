@@ -1,6 +1,7 @@
 require("dotenv").config();
 const db = require("./db");
 const express = require("express");
+const session = require("express-session");
 const path = require("path");
 const multer = require("multer");
 const puppeteer = require("puppeteer");
@@ -35,7 +36,15 @@ const upload = multer({ storage });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(session({
+    secret: "resumenova-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000
+    }
+}));
 // Serve HTML, CSS, JS
 app.use(express.static(__dirname));
 
@@ -137,16 +146,29 @@ app.post("/login", (req, res) => {
     const sql = "SELECT * FROM users WHERE email=? AND password=?";
 
     db.query(sql, [email, password], (err, result) => {
+     
+        
 
         if (err) {
-            console.log(err);
+            console.log("LOGIN ERROR:", err);
             return res.send("Login Failed ❌");
         }
 
         if (result.length > 0) {
+
+            const user = result[0];
+
+            // Store logged-in user's ID
+            req.session.userId = user.id;
+
+            console.log("Logged in User ID:", user.id);
+
             res.redirect("/dashboard");
+
         } else {
+
             res.send("Invalid Email or Password ❌");
+
         }
 
     });
@@ -159,11 +181,26 @@ app.post("/login", (req, res) => {
 app.get("/preview", (req, res) => {
     res.sendFile(path.join(__dirname, "preview.html"));
 });
+
 app.get("/resume-data", (req, res) => {
 
-    const sql = "SELECT * FROM resumes ORDER BY id DESC LIMIT 1";
+    const userId = req.session.userId;
+    console.log("RESUME DATA USER ID:", userId);
 
-    db.query(sql, (err, result) => {
+    if (!userId) {
+        return res.status(401).json({
+            error: "Please login first"
+        });
+    }
+
+    const sql = `
+        SELECT * FROM resumes
+        WHERE user_id = ?
+        ORDER BY id DESC
+        LIMIT 1
+    `;
+
+    db.query(sql, [userId], (err, result) => {
 
         if (err) {
             console.log("RESUME DATA ERROR:", err);
@@ -182,10 +219,15 @@ app.get("/resume-data", (req, res) => {
     });
 
 });
+
 app.post("/resume", upload.single("photo"), (req, res) => {
 
     const photo = req.file ? req.file.filename : null;
-    
+    const userId = req.session.userId;
+
+    if (!userId) {
+        return res.status(401).send("Please login first ❌");
+    }
 
     const {
         fullname,
@@ -201,48 +243,55 @@ app.post("/resume", upload.single("photo"), (req, res) => {
 
     const sql = `
         INSERT INTO resumes
-        (photo, fullname, email, phone, address, objective, skills, education, experience, projects)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (user_id, photo, fullname, email, phone, address, objective, skills, education, experience, projects)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(
-        sql,
-        [
-            photo,
-            fullname,
-            email,
-            phone,
-            address,
-            objective,
-            skills,
-            education,
-            experience,
-            projects
-        ],
-        (err) => {
+    db.query(sql, [
+        userId,
+        photo,
+        fullname,
+        email,
+        phone,
+        address,
+        objective,
+        skills,
+        education,
+        experience,
+        projects
+    ], (err) => {
 
-            if (err) {
-                console.log(err);
-                return res.send("Resume Save Failed ❌");
-            }
-
-            console.log("Resume Saved Successfully ✅");
-
-            res.redirect("/preview");
-
+        if (err) {
+            console.log("RESUME SAVE ERROR:", err);
+            return res.send("Resume Save Failed ❌");
         }
-    );
+
+        console.log("Resume Saved Successfully ✅");
+        console.log("Resume User ID:", userId);
+
+        res.redirect("/preview");
+    });
 
 });
-
 /* ===========================
    RESUME DATA
 =========================== */
 app.get("/download-pdf", async (req, res) => {
 
-    const sql = "SELECT * FROM resumes ORDER BY id DESC LIMIT 1";
+    const userId = req.session.userId;
 
-    db.query(sql, async (err, result) => {
+if (!userId) {
+    return res.status(401).send("Please login first ❌");
+}
+
+const sql = `
+    SELECT * FROM resumes
+    WHERE user_id = ?
+    ORDER BY id DESC
+    LIMIT 1
+`;
+
+    db.query(sql, [userId], async (err, result) => {
 
         if (err) {
             console.log("PDF DATABASE ERROR:", err);
