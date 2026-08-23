@@ -283,72 +283,55 @@
     </div>
 
 </section>
-<!-- ================= Testimonials Section ================= -->
 
-<section class="testimonials">
+
+<!-- ================= Rating Section ================= -->
+
+<section class="rating-section" id="rating">
 
     <div class="section-title">
+        
 
-        <span>TESTIMONIALS</span>
 
-        <h2>What Our Users Say</h2>
+        <span>RATE YOUR EXPERIENCE</span>
+
+        <h2>How was your ResumeNova AI experience?</h2>
 
         <p>
-            Thousands of job seekers trust ResumeNova AI to build
-            professional resumes.
+            Your feedback helps us make ResumeNova AI better.
         </p>
 
     </div>
 
-    <div class="testimonial-container">
+    <div class="rating-card">
 
-        <div class="testimonial-card">
+        <div class="rating-stars">
 
-            <div class="stars">⭐⭐⭐⭐⭐</div>
-
-            <p>
-                "ResumeNova AI helped me create a professional resume
-                within minutes. Highly recommended!"
-            </p>
-
-            <h4>Arun Kumar</h4>
-
-            <span>Software Developer</span>
+            <button type="button" class="star" data-rating="1">★</button>
+            <button type="button" class="star" data-rating="2">★</button>
+            <button type="button" class="star" data-rating="3">★</button>
+            <button type="button" class="star" data-rating="4">★</button>
+            <button type="button" class="star" data-rating="5">★</button>
 
         </div>
 
-        <div class="testimonial-card">
+        <p id="rating-text">
+            Select your rating
+        </p>
 
-            <div class="stars">⭐⭐⭐⭐⭐</div>
+        <textarea
+            id="feedback"
+            placeholder="Tell us what you think..."
+            maxlength="300"></textarea>
 
-            <p>
-                "The ATS score feature helped me improve my resume
-                and get shortlisted."
-            </p>
+        <button type="button" id="submit-rating">
+            Submit Review
+        </button>
 
-            <h4>Priya S</h4>
-
-            <span>UI/UX Designer</span>
-
-        </div>
-
-        <div class="testimonial-card">
-
-            <div class="stars">⭐⭐⭐⭐⭐</div>
-
-            <p>
-                "Simple, fast and beautiful templates.
-                Best AI resume builder I've used."
-            </p>
-
-            <h4>Rahul M</h4>
-
-            <span>Data Analyst</span>
-
-        </div>
+        <p id="rating-message"></p>
 
     </div>
-
+    
 </section>
 <!-- ================= Statistics Section ================= -->
 
@@ -459,6 +442,91 @@
     </div>
 
 </footer>
+</footer>
+
+<script>
+
+const stars = document.querySelectorAll(".star");
+const feedback = document.getElementById("feedback");
+const submitRating = document.getElementById("submit-rating");
+const ratingMessage = document.getElementById("rating-message");
+
+let selectedRating = 0;
+
+stars.forEach(star => {
+
+    star.addEventListener("click", () => {
+
+        selectedRating = Number(star.dataset.rating);
+
+        stars.forEach(s => {
+
+            s.classList.toggle(
+                "active",
+                Number(s.dataset.rating) <= selectedRating
+            );
+
+        });
+
+    });
+
+});
+
+submitRating.addEventListener("click", async () => {
+
+    if (selectedRating === 0) {
+
+        ratingMessage.textContent = "Please select a rating ⭐";
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch("/submit-rating", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                rating: selectedRating,
+                feedback: feedback.value
+            })
+
+        });
+
+        const data = await response.json();
+
+        ratingMessage.textContent = data.message;
+
+        if (data.success) {
+
+            feedback.value = "";
+            selectedRating = 0;
+
+            stars.forEach(star => {
+                star.classList.remove("active");
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error("RATING ERROR:", error);
+
+        ratingMessage.textContent = "Something went wrong ❌";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
 
 </body>
 </html>

@@ -481,7 +481,44 @@ Return ONLY valid JSON like this:
     }
 
 });
+app.post("/submit-rating", (req, res) => {
 
+    const { rating, feedback } = req.body;
+    const userId = req.session.userId || null;
+
+    if (!rating) {
+        return res.status(400).json({
+            success: false,
+            message: "Please select a rating"
+        });
+    }
+
+    const sql = `
+        INSERT INTO reviews (user_id, rating, feedback)
+        VALUES (?, ?, ?)
+    `;
+
+    db.query(sql, [userId, rating, feedback], (err, result) => {
+
+        if (err) {
+            console.log("RATING SAVE ERROR:", err);
+
+            return res.status(500).json({
+                success: false,
+                message: "Rating save failed"
+            });
+        }
+
+        console.log("Rating Saved ⭐:", rating);
+
+        res.json({
+            success: true,
+            message: "Thank you for your feedback! ⭐"
+        });
+
+    });
+
+});
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });
